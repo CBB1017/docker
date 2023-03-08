@@ -1,0 +1,61 @@
+version: "3"
+
+services:
+    nginx:
+        build: 
+           context: /usr/local/docker/nginx
+           dockerfile: Dockerfile
+        restart: always
+        environment:
+                TZ: "Asia/Seoul"
+        ports: 
+                - "80:80"
+        volumes: 
+                - "nginx_volume:/etc/nginx"
+                - "/usr/local/docker/nginx/build:/usr/local/build"
+                - "/var/run/docker.sock:/var/run/docker.sock"
+        networks:
+              dnabro_net:
+                      ipv4_address: 172.19.0.2
+        container_name: nginxContainer
+    jenkins:
+         image: cbb1017/jenkins:latest
+         #build:
+           #context: /usr/local/docker/jenkins
+           #dockerfile: Dockerfile
+         restart: always 
+         volumes:
+                 - "jenkins_volume:/var/jenkins_home"
+                 - "/var/run/docker.sock:/var/run/docker.sock"
+         environment:
+                 TZ: "Asia/Seoul"
+         ports:
+                 - "7009:8080"
+                 - "50000:50000"
+         container_name: jenkinscontainer
+         networks: 
+               dnabro_net:
+                        ipv4_address: 172.19.0.3
+                        #   mariadb:
+                        #         build:
+                        #          context: /usr/local/docker/mariadb
+                        #   dockerfile: Dockerfile
+                        #     args:
+                        # buildno: 1.0
+                        #container_name: maridbcontainer
+                        #restart: always
+                        # volumes: 
+                        #   - "db_volume:/var/lib/mysql"
+                        #      - "db_volume:/etc"
+                        #   environment:
+                        #     TZ: "Asia/Seoul"
+                        #       ports:
+                        #   - "3307:3306"
+volumes: 
+   db_volume:
+   nginx_volume:
+   jenkins_volume:
+networks:
+   dnabro_net:
+        external: true
+
